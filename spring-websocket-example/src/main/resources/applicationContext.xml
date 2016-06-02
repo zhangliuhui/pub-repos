@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+		http://www.springframework.org/schema/context   
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/**">configurer</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="configurer"
+		class="org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler"></bean>
+	<bean id="echoHandler"
+		class="org.springframework.samples.websocket.echo.SystemWebSocketHandler"></bean>
+	<websocket:handlers>
+		<websocket:mapping path="/echo" handler="echoHandler" />
+		<websocket:handshake-interceptors>
+			<bean
+				class="org.springframework.samples.websocket.echo.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+	</websocket:handlers>
+	<websocket:handlers>
+		<websocket:mapping path="/sockjs/echo" handler="echoHandler" />
+		<websocket:handshake-interceptors>
+			<bean
+				class="org.springframework.samples.websocket.echo.HandshakeInterceptor" />
+		</websocket:handshake-interceptors>
+		<websocket:sockjs />
+	</websocket:handlers>
+	<!-- 配置websocket消息的最大缓冲区长度 -->
+	<bean
+		class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">
+		<property name="maxTextMessageBufferSize" value="8192" />
+		<property name="maxBinaryMessageBufferSize" value="8192" />
+	</bean>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+</beans>
